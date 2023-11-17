@@ -1,0 +1,5 @@
+.DS_STORE
+.gradle/
+.idea
+build/
+k6/data/*.csv

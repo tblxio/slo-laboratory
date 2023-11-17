@@ -1,0 +1,42 @@
+spring:
+  webflux:
+    base-path: /
+
+  r2dbc:
+    url: r2dbc:pool:postgresql://database:5432/fms
+    username: restapi
+    password: "R3stApi*"
+    properties:
+      lock_timeout: 40000
+      statement_timeout: 40000
+      idle_in_transaction_session_timeout: 40000
+      connectTimeout: PT55S
+
+
+management:
+  server:
+    port: 9000
+
+  endpoints:
+    web:
+      base-path: "/"
+      exposure:
+        include:
+          - "health"
+          - "metrics"
+          - "prometheus"
+
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+
+  health:
+    probes:
+      enabled: true
+
+  metrics:
+    distribution:
+      percentiles[http.server.requests]: 0.5, 0.90, 0.95, 0.99
+      percentiles-histogram[http.server.requests]: true
+      slo[http.server.requests]: 10ms, 25ms, 50ms, 100ms, 250ms, 500ms, 1s, 2s, 5s, 10s, 30s

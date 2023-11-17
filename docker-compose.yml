@@ -1,0 +1,89 @@
+version: '3.7'
+
+services:
+  prometheus:
+    image: bitnami/prometheus:2.47.2
+    volumes:
+      - ./prometheus:/etc/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - '9090:9090'
+  
+  grafana:
+    image: grafana/grafana:10.2.1
+    environment:
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_BASIC_ENABLED=false
+    volumes:
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana/dashboard.yaml:/etc/grafana/provisioning/dashboards/main.yaml
+      - ./grafana/datasources.yaml:/etc/grafana/provisioning/datasources/main.yaml
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    ports:
+      - '3000:3000'
+
+  rest-api:
+    hostname: rest-api
+    build:
+      context: ./rest-api
+    ports:
+      - '8080:8080'
+      - '9000:9000'
+    depends_on:
+      database:
+        condition: service_healthy
+      flyway:
+        condition: service_completed_successfully
+
+  database:
+    hostname: database
+    build:
+      context: ./database
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+    volumes:
+      - ./database/1-init-db.sql:/docker-entrypoint-initdb.d/1-init-db.sql
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  flyway:
+    image: flyway/flyway:10
+    volumes:
+      - ./database/migrations:/flyway/sql
+    command: -url=jdbc:postgresql://database:5432/fms -user=flyway -password='Flyw4y!' -connectRetries=60 migrate
+  
+  database-extractor:
+    image: postgres:16.1
+    volumes:
+      - ./database/extractor:/scripts
+      - ./k6/data:/data
+    environment:
+      - PGHOST=database
+      - PGDATABASE=fms
+      - PGUSER=flyway
+      - PGPASSWORD=Flyw4y!
+    depends_on:
+      database:
+        condition: service_healthy
+      flyway:
+        condition: service_completed_successfully
+    command: bash -c "psql -f /scripts/extract-vehicles.sql -o /data/vehicles.csv --csv && psql -f /scripts/extract-drivers.sql -o /data/drivers.csv --csv"
+
+  k6:
+    image: grafana/k6:0.47.0
+    volumes:
+      - ./k6/script.js:/scripts/script.js
+      - ./k6/data:/scripts/data
+    depends_on:
+      database-extractor:
+        condition: service_completed_successfully
+    entrypoint: "k6 run /scripts/script.js"

@@ -1,0 +1,45 @@
+@startuml
+
+entity "operators" as operators {
+    * operator_id : SERIAL [PK]
+    --
+    company_name : VARCHAR(255)
+    contact_name : VARCHAR(255)
+    contact_email : VARCHAR(255)
+    phone_number : VARCHAR(50)
+    address : TEXT
+}
+
+entity "fleets" as fleets {
+    * fleet_id : SERIAL [PK]
+    --
+    # operator_id : INT [FK]
+    fleet_name : VARCHAR(255)
+    description : TEXT
+}
+
+entity "vehicles" as vehicles {
+    * vehicle_id : SERIAL [PK]
+    --
+    # fleet_id : INT [FK]
+    license_plate : VARCHAR(255)
+    status : status ENUM
+    last_service_date : DATE
+}
+
+entity "drivers" as drivers {
+    * driver_id : SERIAL [PK]
+    --
+    # operator_id : INT [FK]
+    first_name : VARCHAR(255)
+    last_name : VARCHAR(255)
+    license_number : VARCHAR(255)
+    date_of_birth : DATE
+    hire_date : DATE
+}
+
+operators ||--o{ fleets
+fleets ||--o{ vehicles
+operators ||--o{ drivers
+
+@enduml
