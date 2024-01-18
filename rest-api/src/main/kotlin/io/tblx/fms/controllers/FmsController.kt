@@ -27,10 +27,8 @@ import java.lang.IllegalStateException
 
 /**
  * Controller that handles CRUD operations for operators, fleets, drivers and vehicles.
- * 
- * Exposes REST endpoints for fetching paginated lists of resources as well as individual resources by ID.
- * 
- * Implements error handling logic such as:
+ * * Exposes REST endpoints for fetching paginated lists of resources as well as individual resources by ID.
+ * * Implements error handling logic such as:
  * - Mapping various exceptions to appropriate HTTP error statuses
  * - Catching invalid sort parameters to avoid 500 errors
 */
