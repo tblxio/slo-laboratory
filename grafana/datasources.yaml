@@ -10,3 +10,10 @@ datasources:
     isDefault: true
     jsonData:
       httpMethod: GET
+  - name: "Prometheus Alert Manager"
+    type: alertmanager
+    url: http://prometheus:9090
+    access: proxy
+    jsonData:
+      implementation: prometheus
+      handleGrafanaManagedAlerts: false

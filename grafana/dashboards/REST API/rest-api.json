@@ -3046,7 +3046,7 @@
       "type": "timeseries"
     }
   ],
-  "refresh": false,
+  "refresh": "30s",
   "schemaVersion": 38,
   "tags": [],
   "templating": {
@@ -3073,7 +3073,7 @@
       },
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "50",
           "value": "50"
         },
@@ -3169,13 +3169,13 @@
     ]
   },
   "time": {
-    "from": "2023-11-17T10:15:03.412Z",
-    "to": "2023-11-17T11:46:02.017Z"
+    "from": "now-3h",
+    "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "REST API Monitoring",
   "uid": "e515d16f-4025-4bb2-bcdb-7d4d5978d92b",
-  "version": 16,
+  "version": 4,
   "weekStart": ""
 }

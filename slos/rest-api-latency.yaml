@@ -1,0 +1,17 @@
+apiVersion: pyrra.dev/v1alpha1
+kind: ServiceLevelObjective
+metadata:
+  name: rest-api-latency
+  namespace: rest-api
+  labels:
+    prometheus: k8s
+    role: alert-rules
+spec:
+  target: '99.0'
+  window: 28d
+  indicator:
+    latency:
+      success:
+        metric: http_server_requests_seconds_bucket{uri=~"/operators.*", status=~"2..", le="0.05"}
+      total:
+        metric: http_server_requests_seconds_count{uri=~"/operators.*", status=~"2.."}

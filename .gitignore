@@ -3,3 +3,4 @@
 .idea
 build/
 k6/data/*.csv
+prometheus_pyrra
