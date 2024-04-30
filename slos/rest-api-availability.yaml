@@ -1,0 +1,17 @@
+apiVersion: pyrra.dev/v1alpha1
+kind: ServiceLevelObjective
+metadata:
+  name: rest-api-availability
+  namespace: rest-api
+  labels:
+    prometheus: k8s
+    role: alert-rules
+spec:
+  target: '99.0'
+  window: 28d
+  indicator:
+    ratio:
+      errors:
+        metric: http_server_requests_seconds_count{uri=~"/operators.*", status=~"5.."}
+      total:
+        metric: http_server_requests_seconds_count{uri=~"/operators.*"}

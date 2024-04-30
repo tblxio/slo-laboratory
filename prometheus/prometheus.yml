@@ -2,8 +2,15 @@ global:
   scrape_interval: 15s
   evaluation_interval: 15s
 
+rule_files:
+  - 'pyrra/*.yaml'
+
 scrape_configs:
   - job_name: 'rest-api'
     metrics_path: '/prometheus'
     static_configs:
       - targets: ['rest-api:9000']
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
